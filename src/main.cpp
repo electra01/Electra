@@ -994,6 +994,7 @@ int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
     int64_t nSubsidy;
 
     if (pindexBest->nHeight >= HARD_FORK_BLOCK) // 24 * 60 / 2.5 = 576 blocks per day after fork (210240 blocks per year)
+    {
         if (pindexBest->nHeight < HARD_FORK_BLOCK + 210240) // first year
             nRewardCoinYear = 2.5 * CENT; // 2.5% interest
         else if (pindexBest->nHeight < HARD_FORK_BLOCK + 210240 * 2) // second year
@@ -1011,6 +1012,7 @@ int64_t GetProofOfStakeReward(int64_t nCoinAge, int64_t nFees)
         else // eighth year and beyond
             nRewardCoinYear = 0.02 * CENT; // 0.02% interest
         nSubsidy = nCoinAge * nRewardCoinYear / 365;
+    }
     else if (pindexBest->nHeight > LAST_OLD_POS_BLOCK)
         nSubsidy = nCoinAge * nRewardCoinYear / 365;
     else
