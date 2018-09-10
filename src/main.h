@@ -46,7 +46,7 @@ static const int MODIFIER_INTERVAL_SWITCH = 11811;
 static const int LAST_OLD_POS_BLOCK = 17100;
 
 //Hard fork to reduce interest and block time - first block
-static const int64_t HARD_FORK_BLOCK = 108000;
+static const int64_t HARD_FORK_BLOCK = 112200;
 
 inline bool MoneyRange(int64_t nValue) { return (nValue >= 0); }
 // Threshold for nLockTime: below this value it is interpreted as block number, otherwise as UNIX timestamp.

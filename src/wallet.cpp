@@ -16,6 +16,7 @@
 
 using namespace std;
 extern unsigned int nStakeMaxAge;
+extern unsigned int nStakeMaxAgeOld;
 
 unsigned int nStakeSplitAge = 10 * 24 * 60 * 60;
 int64_t nStakeCombineThreshold = 25000 * COIN;
@@ -1535,13 +1536,13 @@ bool CWallet::GetStakeWeight(const CKeyStore& keystore, uint64_t& nMinWeight, ui
         }
 
         // Weight is greater than zero, but the maximum value isn't reached yet
-        if (nTimeWeight > 0 && nTimeWeight < nStakeMaxAge)
+        if (nTimeWeight > 0 && nTimeWeight < (pindexBest->nHeight+1>=HARD_FORK_BLOCK ? nStakeMaxAge : nStakeMaxAgeOld))
         {
             nMinWeight += bnCoinDayWeight.getuint64();
         }
 
         // Maximum weight was reached
-        if (nTimeWeight == nStakeMaxAge)
+        if (nTimeWeight == (pindexBest->nHeight+1>=HARD_FORK_BLOCK ? nStakeMaxAge : nStakeMaxAgeOld))
         {
             nMaxWeight += bnCoinDayWeight.getuint64();
         }
@@ -1603,7 +1604,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
         }
 
         static int nMaxStakeSearchInterval = 60;
-        if (block.GetBlockTime() + nStakeMinAge > txNew.nTime - nMaxStakeSearchInterval)
+        if (block.GetBlockTime() + (pindexPrev->nHeight+1>=HARD_FORK_BLOCK ? nStakeMinAge : nStakeMinAgeOld) > txNew.nTime - nMaxStakeSearchInterval)
             continue; // only count coins meeting min age requirement
 
         bool fKernelFound = false;
@@ -1711,7 +1712,7 @@ bool CWallet::CreateCoinStake(const CKeyStore& keystore, unsigned int nBits, int
             if (pcoin.first->vout[pcoin.second].nValue >= nStakeCombineThreshold)
                 continue;
             // Do not add input that is still too young
-            if (nTimeWeight < nStakeMinAge)
+            if (nTimeWeight < (pindexPrev->nHeight+1>=HARD_FORK_BLOCK ? nStakeMinAge : nStakeMinAgeOld))
                 continue;
 
             txNew.vin.push_back(CTxIn(pcoin.first->GetHash(), pcoin.second));
